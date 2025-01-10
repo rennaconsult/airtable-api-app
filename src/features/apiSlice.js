@@ -4,26 +4,33 @@ const apiSlice = createSlice({
   name: "api",
   initialState: {
     apiKey: "",
-    bases: [],
+    apiKeys: [],
+    bases: [], // Array to store base information
     selectedBase: null,
     schemas: {},
   },
   reducers: {
     setApiKey: (state, action) => {
       state.apiKey = action.payload;
+      if (!state.apiKeys.includes(action.payload)) {
+        state.apiKeys.push(action.payload);
+      }
     },
-    setBases: (state, action) => {
-      state.bases = action.payload;
+    removeApiKey: (state, action) => {
+      state.apiKeys = state.apiKeys.filter((key) => key !== action.payload);
+      if (state.apiKey === action.payload) {
+        state.apiKey = state.apiKeys[0] || "";
+      }
     },
-    selectBase: (state, action) => {
-      state.selectedBase = action.payload;
+    addBase: (state, action) => {
+      state.bases.push(action.payload); // Add base object { id, name }
     },
-    setSchema: (state, action) => {
-      const { baseId, schema } = action.payload;
-      state.schemas[baseId] = schema;
+    removeBase: (state, action) => {
+      state.bases = state.bases.filter((base) => base.id !== action.payload);
     },
   },
 });
 
-export const { setApiKey, setBases, selectBase, setSchema } = apiSlice.actions;
+export const { setApiKey, removeApiKey, addBase, removeBase } =
+  apiSlice.actions;
 export default apiSlice.reducer;

@@ -1,0 +1,336 @@
+{
+    "tables": [
+        {
+            "id": "tblSgvmyIbev1KYMB",
+            "name": "Courses",
+            "primaryFieldId": "fldrIPLh5gIizJhEM",
+            "fields": [
+                {
+                    "type": "singleLineText",
+                    "id": "fldrIPLh5gIizJhEM",
+                    "name": "Course Name"
+                },
+                {
+                    "type": "multipleAttachments",
+                    "options": {
+                        "isReversed": false
+                    },
+                    "id": "fldMN3piOf6Nox4qz",
+                    "name": "Course Hero Image"
+                },
+                {
+                    "type": "singleSelect",
+                    "options": {
+                        "choices": [
+                            {
+                                "id": "selrYcKc6OIT0Dunq",
+                                "name": "Digital Transformation 💻🔄",
+                                "color": "blueDark1"
+                            },
+                            {
+                                "id": "selesPBkANsrUfdcg",
+                                "name": "Business Process Automation 🤖⚙️",
+                                "color": "purpleDark1"
+                            },
+                            {
+                                "id": "sel2iHDgNjuORHqVM",
+                                "name": "Operational Scaling 📈🏗️",
+                                "color": "greenDark1"
+                            },
+                            {
+                                "id": "selB6m2zuV3CCqpyN",
+                                "name": "Customer Experience Automation 💬✨",
+                                "color": "yellowBright"
+                            },
+                            {
+                                "id": "seldyAF8Na2ZmkbI7",
+                                "name": "Sales & Marketing Automation 📣📬",
+                                "color": "pinkDark1"
+                            }
+                        ]
+                    },
+                    "id": "fldSYhk7SEy8XgT1t",
+                    "name": "Curriculum"
+                },
+                {
+                    "type": "richText",
+                    "id": "fldUfrIt9CNSyGbhg",
+                    "name": "Course Overview"
+                },
+                {
+                    "type": "multipleRecordLinks",
+                    "options": {
+                        "linkedTableId": "tblbTCsrRO8pKyIY1",
+                        "isReversed": false,
+                        "prefersSingleRecordLink": false,
+                        "inverseLinkFieldId": "fldSe2Yg2RnNY9qaY"
+                    },
+                    "id": "fldiXYkD0pxZUZ8nG",
+                    "name": "Modules"
+                },
+                {
+                    "type": "rollup",
+                    "options": {
+                        "isValid": true,
+                        "recordLinkFieldId": "fldiXYkD0pxZUZ8nG",
+                        "fieldIdInLinkedTable": "fldsR3QCqjMWYLUWI",
+                        "referencedFieldIds": [],
+                        "result": {
+                            "type": "number",
+                            "options": {
+                                "precision": 0
+                            }
+                        }
+                    },
+                    "id": "fldpA3zYCuK76bUyq",
+                    "name": "Modules Count"
+                },
+                {
+                    "type": "checkbox",
+                    "options": {
+                        "icon": "check",
+                        "color": "greenBright"
+                    },
+                    "id": "fldHy8Z7oRfmJa8Ju",
+                    "name": "Live"
+                }
+            ],
+            "views": [
+                {
+                    "id": "viwotuo9l42R3Q69y",
+                    "name": "Index",
+                    "type": "grid"
+                }
+            ]
+        },
+        {
+            "id": "tblbTCsrRO8pKyIY1",
+            "name": "Modules",
+            "primaryFieldId": "fldsR3QCqjMWYLUWI",
+            "fields": [
+                {
+                    "type": "formula",
+                    "options": {
+                        "isValid": true,
+                        "formula": "{fldSe2Yg2RnNY9qaY}&': '&{fldgSxOzZrkKHEHRq}&\" [ \"&{fldoKfoNdzeWIPpMT}&\" ]\"",
+                        "referencedFieldIds": [
+                            "fldSe2Yg2RnNY9qaY",
+                            "fldgSxOzZrkKHEHRq",
+                            "fldoKfoNdzeWIPpMT"
+                        ],
+                        "result": {
+                            "type": "singleLineText"
+                        }
+                    },
+                    "id": "fldsR3QCqjMWYLUWI",
+                    "name": "Name"
+                },
+                {
+                    "type": "multipleAttachments",
+                    "options": {
+                        "isReversed": false
+                    },
+                    "id": "fldFV3Y5OCi0qnhr1",
+                    "name": "Module Hero Image"
+                },
+                {
+                    "type": "multipleLookupValues",
+                    "options": {
+                        "isValid": true,
+                        "recordLinkFieldId": "fldSe2Yg2RnNY9qaY",
+                        "fieldIdInLinkedTable": "fldSYhk7SEy8XgT1t",
+                        "result": {
+                            "type": "singleSelect",
+                            "options": {
+                                "choices": [
+                                    {
+                                        "id": "selrYcKc6OIT0Dunq",
+                                        "name": "Digital Transformation 💻🔄",
+                                        "color": "blueDark1"
+                                    },
+                                    {
+                                        "id": "selesPBkANsrUfdcg",
+                                        "name": "Business Process Automation 🤖⚙️",
+                                        "color": "purpleDark1"
+                                    },
+                                    {
+                                        "id": "sel2iHDgNjuORHqVM",
+                                        "name": "Operational Scaling 📈🏗️",
+                                        "color": "greenDark1"
+                                    },
+                                    {
+                                        "id": "selB6m2zuV3CCqpyN",
+                                        "name": "Customer Experience Automation 💬✨",
+                                        "color": "yellowBright"
+                                    },
+                                    {
+                                        "id": "seldyAF8Na2ZmkbI7",
+                                        "name": "Sales & Marketing Automation 📣📬",
+                                        "color": "pinkDark1"
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    "id": "fldoKfoNdzeWIPpMT",
+                    "name": "Course Section"
+                },
+                {
+                    "type": "multipleRecordLinks",
+                    "options": {
+                        "linkedTableId": "tblSgvmyIbev1KYMB",
+                        "isReversed": false,
+                        "prefersSingleRecordLink": true,
+                        "inverseLinkFieldId": "fldiXYkD0pxZUZ8nG"
+                    },
+                    "id": "fldSe2Yg2RnNY9qaY",
+                    "name": "Course"
+                },
+                {
+                    "type": "number",
+                    "options": {
+                        "precision": 1
+                    },
+                    "id": "fldQU9VRf3BdmEHV0",
+                    "name": "Ord."
+                },
+                {
+                    "type": "singleLineText",
+                    "id": "fldgSxOzZrkKHEHRq",
+                    "name": "Module Name"
+                },
+                {
+                    "type": "richText",
+                    "id": "fldRr1qccSuRM4Cmx",
+                    "name": "Module summary"
+                },
+                {
+                    "type": "duration",
+                    "options": {
+                        "durationFormat": "h:mm"
+                    },
+                    "id": "fld2Fl83K7e812NhQ",
+                    "name": "Duration"
+                },
+                {
+                    "type": "multipleRecordLinks",
+                    "options": {
+                        "linkedTableId": "tblVKgQrYUJ87lKrh",
+                        "isReversed": false,
+                        "prefersSingleRecordLink": false,
+                        "inverseLinkFieldId": "fldtUYyY249CHWqCB"
+                    },
+                    "id": "fldcv8IXG3eeLrlEx",
+                    "name": "Materials"
+                }
+            ],
+            "views": [
+                {
+                    "id": "viw5t5yUWq6e911vM",
+                    "name": "Module Programs",
+                    "type": "grid"
+                },
+                {
+                    "id": "viwDIHzX9LoXskCoi",
+                    "name": "Index",
+                    "type": "grid"
+                }
+            ]
+        },
+        {
+            "id": "tblVKgQrYUJ87lKrh",
+            "name": "Materials",
+            "primaryFieldId": "fldvFPFjSw7zItNX3",
+            "fields": [
+                {
+                    "type": "singleLineText",
+                    "id": "fldvFPFjSw7zItNX3",
+                    "name": "Material-alternate text"
+                },
+                {
+                    "type": "number",
+                    "options": {
+                        "precision": 1
+                    },
+                    "id": "fldOHh1uRJYIhMuR8",
+                    "name": "Ord"
+                },
+                {
+                    "type": "singleSelect",
+                    "options": {
+                        "choices": [
+                            {
+                                "id": "seleP7EC0KRBs2R5T",
+                                "name": "Markdown",
+                                "color": "greenBright"
+                            },
+                            {
+                                "id": "sel8igxY0e6ww6pvt",
+                                "name": "Document",
+                                "color": "blueBright"
+                            },
+                            {
+                                "id": "selftSD5FdKpPj853",
+                                "name": "Video",
+                                "color": "purpleBright"
+                            },
+                            {
+                                "id": "selY42O81ueWce16F",
+                                "name": "Audio",
+                                "color": "cyanBright"
+                            },
+                            {
+                                "id": "selp7L0sZxiqZw6jC",
+                                "name": "Embedded",
+                                "color": "yellowBright"
+                            }
+                        ]
+                    },
+                    "id": "fldnbiJxVbXyCNHvG",
+                    "name": "Type"
+                },
+                {
+                    "type": "multipleAttachments",
+                    "options": {
+                        "isReversed": false
+                    },
+                    "id": "fldPjgjLJOq7qZmaV",
+                    "name": "Material Attachment"
+                },
+                {
+                    "type": "multilineText",
+                    "id": "fldvyHHu5xKchkmu3",
+                    "name": "Content-Markdown"
+                },
+                {
+                    "type": "multilineText",
+                    "id": "fld2cJEpZR4pr3QVO",
+                    "name": "Content-Embedded"
+                },
+                {
+                    "type": "url",
+                    "id": "fldRVgHdaTppfG4SH",
+                    "name": "Content-src-url"
+                },
+                {
+                    "type": "multipleRecordLinks",
+                    "options": {
+                        "linkedTableId": "tblbTCsrRO8pKyIY1",
+                        "isReversed": false,
+                        "prefersSingleRecordLink": true,
+                        "inverseLinkFieldId": "fldcv8IXG3eeLrlEx"
+                    },
+                    "id": "fldtUYyY249CHWqCB",
+                    "name": "Modules"
+                }
+            ],
+            "views": [
+                {
+                    "id": "viwWpL3nNUSzDb2sK",
+                    "name": "Grid view",
+                    "type": "grid"
+                }
+            ]
+        }
+    ]
+}
