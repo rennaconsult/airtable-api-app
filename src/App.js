@@ -7,6 +7,7 @@ function App() {
   return (
     <Router>
       <div>
+        <h1>Welcome to the Airtable App</h1>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/workspace/:baseId/:tableId" element={<Workspace />} />
