@@ -10,11 +10,11 @@ function App() {
     <Router>
       <div>
         {/* Navigation Bar */}
-        <nav style={{ padding: "10px", backgroundColor: "#f0f0f0" }}>
-          <Link to="/" style={{ margin: "0 10px" }}>
+        <nav className="bg-gray-200 p-4 flex">
+          <Link to="/" className="mr-4 text-blue-600 hover:underline">
             Home
           </Link>
-          <Link to="/profile" style={{ margin: "0 10px" }}>
+          <Link to="/profile" className="mr-4 text-blue-600 hover:underline">
             Profile
           </Link>
         </nav>

@@ -1,15 +1,57 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import Field from "../components/Field";
+import { setSchema } from "../features/apiSlice";
 
 function BaseDetails() {
-  const { baseId } = useParams();
-  const apiKey = useSelector((state) => state.api.apiKey); // Get API key from Redux
-  const [schema, setSchema] = useState(null); // Store schema
+  const dispatch = useDispatch();
+  const { baseId } = useParams(); // Move `useParams` here
+  const apiKey = useSelector((state) => state.api.apiKey);
+  const schema = useSelector((state) => state.api.schema);
   const [selectedTable, setSelectedTable] = useState(null);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [activeTab, setActiveTab] = useState("fields");
 
-  // Handle schema import
+  const loadSchemaFromLocalStorage = () => {
+    const storedSchema = localStorage.getItem("schema");
+    if (storedSchema) {
+      const parsedSchema = JSON.parse(storedSchema);
+      dispatch(setSchema(parsedSchema)); // Load schema into Redux
+      if (parsedSchema.tables && parsedSchema.tables.length > 0) {
+        setSelectedTable(parsedSchema.tables[0]); // Default to the first table
+      }
+    } else {
+      alert("No schema found in local storage.");
+    }
+  };
+
+  const fetchSchemaFromAPI = async (baseId) => {
+    if (!apiKey) {
+      alert("No API key found. Please add an API key in your profile.");
+      return;
+    }
+    try {
+      const response = await fetch(
+        `https://api.airtable.com/v0/meta/bases/${baseId}/tables`,
+        {
+          headers: { Authorization: `Bearer ${apiKey}` },
+        }
+      );
+      const data = await response.json();
+      if (data && data.tables) {
+        localStorage.setItem("schema", JSON.stringify(data)); // Save to localStorage
+        dispatch(setSchema(data)); // Save schema in Redux
+        setSelectedTable(data.tables[0]); // Default to the first table
+      } else {
+        alert("Failed to fetch schema. Please check your API key and Base ID.");
+      }
+    } catch (error) {
+      console.error("Error fetching schema:", error);
+      alert("An error occurred while fetching the schema.");
+    }
+  };
+
   const handleImportSchema = (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -17,7 +59,8 @@ function BaseDetails() {
       reader.onload = (e) => {
         try {
           const importedSchema = JSON.parse(e.target.result);
-          setSchema(importedSchema);
+          localStorage.setItem("schema", JSON.stringify(importedSchema)); // Save to localStorage
+          dispatch(setSchema(importedSchema)); // Save to Redux
           if (importedSchema.tables && importedSchema.tables.length > 0) {
             setSelectedTable(importedSchema.tables[0]); // Default to the first table
           }
@@ -30,64 +73,147 @@ function BaseDetails() {
     }
   };
 
-  if (!schema) {
+  if (!schema || !schema.tables) {
     return (
-      <div style={{ padding: "20px" }}>
-        <h2>Base Details</h2>
-        <p>No schema loaded. Please import a schema file to test.</p>
-        <input type="file" accept=".json" onChange={handleImportSchema} />
+      <div className="p-6">
+        <h2 className="text-xl font-bold mb-4">No Schema Loaded</h2>
+        <p>You can load a schema in one of three ways:</p>
+        <div className="mt-4 space-y-4">
+          <button
+            onClick={loadSchemaFromLocalStorage}
+            className="bg-blue-500 text-white p-2 rounded"
+          >
+            Load from Local Storage
+          </button>
+          <button
+            onClick={() => fetchSchemaFromAPI(baseId)} // Pass `baseId` as an argument
+            className="bg-green-500 text-white p-2 rounded"
+          >
+            Fetch from Airtable API
+          </button>
+          <div>
+            <p>Or import a schema file:</p>
+            <input
+              type="file"
+              accept=".json"
+              onChange={handleImportSchema}
+              className="mt-2 p-2 border rounded"
+            />
+          </div>
+        </div>
       </div>
     );
   }
 
-  return (
-    <div style={{ display: "flex", height: "100vh" }}>
-      {/* Sidebar Navigation */}
-      <div
-        style={{
-          width: "250px",
-          backgroundColor: "#f4f4f4",
-          padding: "20px",
-          borderRight: "1px solid #ddd",
-          overflowY: "auto",
-        }}
-      >
-        <h3>Tables</h3>
-        <ul style={{ listStyleType: "none", padding: 0 }}>
-          {schema.tables.map((table) => (
-            <li
-              key={table.id}
-              style={{
-                padding: "10px",
-                cursor: "pointer",
-                backgroundColor:
-                  selectedTable && selectedTable.id === table.id
-                    ? "#ddd"
-                    : "transparent",
-              }}
-              onClick={() => setSelectedTable(table)}
-            >
-              {table.name}
-            </li>
-          ))}
-        </ul>
-      </div>
+  const renderTabContent = () => {
+    if (!selectedTable) {
+      return <p>Please select a table to view details.</p>;
+    }
 
-      {/* Main Content Area */}
-      <div style={{ flex: 1, padding: "20px" }}>
-        <h2>Table: {selectedTable ? selectedTable.name : "Select a Table"}</h2>
-        {selectedTable ? (
+    switch (activeTab) {
+      case "fields":
+        return (
           <div>
-            <h3>Fields</h3>
+            <h3 className="mt-4 mb-2 text-lg font-semibold">Fields</h3>
             <div>
               {selectedTable.fields.map((field) => (
                 <Field key={field.id} field={field} />
               ))}
             </div>
           </div>
-        ) : (
-          <p>Please select a table to view details.</p>
-        )}
+        );
+      case "customDesign1":
+        return <p>Custom Design 1 Content</p>;
+      case "customDesign2":
+        return <p>Custom Design 2 Content</p>;
+      default:
+        return <p>Unknown tab selected.</p>;
+    }
+  };
+
+  return (
+    <div className="flex h-screen">
+      {/* Sidebar */}
+      <div
+        className={`${
+          isSidebarCollapsed ? "w-16" : "w-64"
+        } bg-gray-100 h-full flex-shrink-0 transition-width duration-300 border-r`}
+      >
+        <div className="flex justify-between items-center p-4">
+          <h3
+            className={`${
+              isSidebarCollapsed ? "hidden" : "block"
+            } text-lg font-bold`}
+          >
+            Tables
+          </h3>
+          <button
+            onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+            className="bg-blue-500 text-white rounded-full w-8 h-8 flex items-center justify-center"
+          >
+            {isSidebarCollapsed ? ">" : "<"}
+          </button>
+        </div>
+        <ul className="list-none p-0">
+          {schema.tables.map((table) => (
+            <li
+              key={table.id}
+              className={`p-3 cursor-pointer ${
+                selectedTable && selectedTable.id === table.id
+                  ? "bg-gray-300"
+                  : ""
+              } hover:bg-gray-200`}
+              onClick={() => setSelectedTable(table)}
+            >
+              {isSidebarCollapsed ? table.name.charAt(0) : table.name}
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {/* Main Content */}
+      <div className="flex-1 p-6">
+        <h2 className="text-xl font-bold">
+          Table: {selectedTable ? selectedTable.name : "Select a Table"}
+        </h2>
+        <div className="mt-4">
+          {/* Tabs */}
+          <div className="flex space-x-4 border-b">
+            <button
+              onClick={() => setActiveTab("fields")}
+              className={`p-2 ${
+                activeTab === "fields"
+                  ? "border-b-2 border-blue-500 font-bold"
+                  : ""
+              }`}
+            >
+              Fields
+            </button>
+            <button
+              onClick={() => setActiveTab("customDesign1")}
+              className={`p-2 ${
+                activeTab === "customDesign1"
+                  ? "border-b-2 border-blue-500 font-bold"
+                  : ""
+              }`}
+            >
+              Custom Design 1
+            </button>
+            <button
+              onClick={() => setActiveTab("customDesign2")}
+              className={`p-2 ${
+                activeTab === "customDesign2"
+                  ? "border-b-2 border-blue-500 font-bold"
+                  : ""
+              }`}
+            >
+              Custom Design 2
+            </button>
+          </div>
+
+          {/* Tab Content */}
+          <div className="mt-4">{renderTabContent()}</div>
+        </div>
       </div>
     </div>
   );

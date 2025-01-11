@@ -6,6 +6,7 @@ const apiSlice = createSlice({
     apiKey: "",
     apiKeys: [],
     bases: [], // Array to store base information
+    schema: JSON.parse(localStorage.getItem("schema")) || null, // Load from localStorage
     selectedBase: null,
     schemas: {},
   },
@@ -28,9 +29,13 @@ const apiSlice = createSlice({
     removeBase: (state, action) => {
       state.bases = state.bases.filter((base) => base.id !== action.payload);
     },
+    setSchema: (state, action) => {
+      state.schema = action.payload;
+      localStorage.setItem("schema", JSON.stringify(action.payload)); // Save to localStorage
+    },
   },
 });
 
-export const { setApiKey, removeApiKey, addBase, removeBase } =
+export const { setApiKey, removeApiKey, addBase, removeBase, setSchema } =
   apiSlice.actions;
 export default apiSlice.reducer;

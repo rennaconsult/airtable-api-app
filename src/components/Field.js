@@ -6,10 +6,14 @@ function Field({ field }) {
       case "singleSelect":
         return (
           <div>
-            <h4>Options:</h4>
-            <ul>
+            <h4 className="font-medium">Options:</h4>
+            <ul className="list-disc ml-6">
               {field.options.choices.map((choice) => (
-                <li key={choice.id} style={{ color: choice.color }}>
+                <li
+                  key={choice.id}
+                  className="text-sm"
+                  style={{ color: choice.color }}
+                >
                   {choice.name}
                 </li>
               ))}
@@ -20,65 +24,94 @@ function Field({ field }) {
       case "multipleAttachments":
         return (
           <div>
-            <p>This field allows multiple attachments.</p>
-            {field.options?.isReversed && <p>Reversed order: Yes</p>}
+            <p className="text-sm">Allows multiple attachments.</p>
+            {field.options?.isReversed && (
+              <p className="text-sm">Reversed order: Yes</p>
+            )}
           </div>
         );
 
       case "checkbox":
         return (
           <div>
-            <p>Checkbox Icon: {field.options.icon}</p>
-            <p>Checkbox Color: {field.options.color}</p>
+            <p className="text-sm">Checkbox Icon: {field.options.icon}</p>
+            <p className="text-sm">Checkbox Color: {field.options.color}</p>
           </div>
         );
 
       case "rollup":
         return (
           <div>
-            <p>Rollup Target Field ID: {field.options.fieldIdInLinkedTable}</p>
-            <p>Result Type: {field.options.result.type}</p>
+            <p className="text-sm">
+              Rollup Target Field ID: {field.options.fieldIdInLinkedTable}
+            </p>
+            <p className="text-sm">Result Type: {field.options.result.type}</p>
           </div>
         );
 
       case "multipleRecordLinks":
         return (
           <div>
-            <p>Linked Table ID: {field.options.linkedTableId}</p>
+            <p className="text-sm">
+              Linked Table ID: {field.options.linkedTableId}
+            </p>
             {field.options.prefersSingleRecordLink && (
-              <p>Single Record Link: Yes</p>
+              <p className="text-sm">Single Record Link: Yes</p>
             )}
           </div>
         );
 
       case "richText":
-        return <p>This field supports rich text formatting.</p>;
+        return <p className="text-sm">Supports rich text formatting.</p>;
 
       case "formula":
         return (
           <div>
-            <p>Formula: {field.options.formula}</p>
-            <p>Result Type: {field.options.result.type}</p>
+            <p className="text-sm">Formula: {field.options.formula}</p>
+            <p className="text-sm">Result Type: {field.options.result.type}</p>
           </div>
         );
 
+      case "duration":
+        return (
+          <div>
+            <p className="text-sm">
+              Format: {field.options.durationFormat || "Default format"}
+            </p>
+          </div>
+        );
+
+      case "number":
+        return (
+          <div>
+            <p className="text-sm">
+              Precision: {field.options.precision || "Not specified"}
+            </p>
+          </div>
+        );
+
+      case "multilineText":
+        return <p className="text-sm">Supports multi-line text input.</p>;
+
+      case "singleLineText":
+        return <p className="text-sm">Supports single-line text input.</p>;
+
+      case "url":
+        return <p className="text-sm">This field accepts URLs.</p>;
+
       default:
-        return <p>No additional details available for this field type.</p>;
+        return (
+          <p className="text-sm text-gray-500">
+            No additional details available for this field type.
+          </p>
+        );
     }
   };
 
   return (
-    <div
-      style={{
-        border: "1px solid #ddd",
-        borderRadius: "5px",
-        padding: "10px",
-        marginBottom: "10px",
-        backgroundColor: "#f9f9f9",
-      }}
-    >
-      <h3>{field.name}</h3>
-      <p>
+    <div className="border rounded p-4 mb-4 bg-white shadow">
+      <h3 className="text-lg font-semibold">{field.name}</h3>
+      <p className="text-sm text-gray-600">
         <strong>Type:</strong> {field.type}
       </p>
       {renderFieldDetails()}
