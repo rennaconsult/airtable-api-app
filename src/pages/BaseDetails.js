@@ -5,6 +5,8 @@ import Field from "../components/Field";
 import { setSchema } from "../features/apiSlice";
 import { getBase } from "../utils/firestore"; // Fetch a single Base from Firestore
 import { fetchSchemaFromAPI } from "../utils/apiHelpers"; // Refactor API fetch logic into a helper
+import CustomComponent from "../components/CustomComponent";
+import CustomDesign1 from "../components/CustomDesign1";
 
 function BaseDetails() {
   const dispatch = useDispatch();
@@ -61,10 +63,34 @@ function BaseDetails() {
             </div>
           </div>
         );
+
       case "customDesign1":
-        return <p>Custom Design 1 Content</p>;
+        // Ensure that the schema passed to CustomComponent is properly formatted
+        if (!selectedTable || !selectedTable.fields) {
+          return <p>Error: No table or fields available for custom design.</p>;
+        }
+
+        return (
+          <CustomComponent
+            schema={{
+              fields: selectedTable.fields, // Pass only the fields of the selected table
+            }}
+          />
+        );
+
       case "customDesign2":
-        return <p>Custom Design 2 Content</p>;
+        if (!selectedTable || !selectedTable.fields) {
+          return <p>Error: No table or fields available for custom design.</p>;
+        }
+
+        return (
+          <CustomDesign1
+            schema={{
+              fields: selectedTable.fields, // Pass only the fields of the selected table
+            }}
+          />
+        );
+
       default:
         return <p>Unknown tab selected.</p>;
     }
@@ -94,20 +120,19 @@ function BaseDetails() {
           </button>
         </div>
         <ul className="list-none p-0">
-          {schema &&
-            schema.tables.map((table) => (
-              <li
-                key={table.id}
-                className={`p-3 cursor-pointer ${
-                  selectedTable && selectedTable.id === table.id
-                    ? "bg-gray-300"
-                    : ""
-                } hover:bg-gray-200`}
-                onClick={() => setSelectedTable(table)}
-              >
-                {isSidebarCollapsed ? table.name.charAt(0) : table.name}
-              </li>
-            ))}
+          {schema.tables.map((table) => (
+            <li
+              key={table.id}
+              className={`p-3 cursor-pointer ${
+                selectedTable && selectedTable.id === table.id
+                  ? "bg-gray-300"
+                  : ""
+              } hover:bg-gray-200`}
+              onClick={() => setSelectedTable(table)}
+            >
+              {isSidebarCollapsed ? table.name.charAt(0) : table.name}
+            </li>
+          ))}
         </ul>
       </div>
 
