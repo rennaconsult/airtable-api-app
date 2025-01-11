@@ -3,6 +3,8 @@ import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import Home from "./pages/Home";
 import Profile from "./pages/Profile";
 import BaseDetails from "./pages/BaseDetails";
+import RegisterBase from "./pages/RegisterBase";
+import BasesList from "./components/BasesList";
 import Workspace from "./pages/Workspace";
 
 function App() {
@@ -17,13 +19,17 @@ function App() {
           <Link to="/profile" className="mr-4 text-blue-600 hover:underline">
             Profile
           </Link>
+          <Link to="/bases" className="mr-4 text-blue-600 hover:underline">
+            Bases
+          </Link>
         </nav>
 
         {/* App Routes */}
         <Routes>
-          <Route path="/" element={<Home />} />
           <Route path="/profile" element={<Profile />} />
-          <Route path="/workspace/:baseId/:tableId" element={<Workspace />} />
+          <Route path="/" element={<Home />} />
+          <Route path="/register-base" element={<RegisterBase />} />
+          <Route path="/bases" element={<BasesList />} />
           <Route path="/base/:baseId" element={<BaseDetails />} />
         </Routes>
       </div>

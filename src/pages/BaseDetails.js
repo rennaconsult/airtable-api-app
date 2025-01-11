@@ -3,108 +3,47 @@ import { useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import Field from "../components/Field";
 import { setSchema } from "../features/apiSlice";
+import { getBase } from "../utils/firestore"; // Fetch a single Base from Firestore
+import { fetchSchemaFromAPI } from "../utils/apiHelpers"; // Refactor API fetch logic into a helper
 
 function BaseDetails() {
   const dispatch = useDispatch();
-  const { baseId } = useParams(); // Move `useParams` here
+  const { baseId } = useParams(); // Get Base ID from the URL
   const apiKey = useSelector((state) => state.api.apiKey);
-  const schema = useSelector((state) => state.api.schema);
+  const schema = useSelector((state) => state.api.schema); // Current schema in Redux
   const [selectedTable, setSelectedTable] = useState(null);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [activeTab, setActiveTab] = useState("fields");
 
-  const loadSchemaFromLocalStorage = () => {
-    const storedSchema = localStorage.getItem("schema");
-    if (storedSchema) {
-      const parsedSchema = JSON.parse(storedSchema);
-      dispatch(setSchema(parsedSchema)); // Load schema into Redux
-      if (parsedSchema.tables && parsedSchema.tables.length > 0) {
-        setSelectedTable(parsedSchema.tables[0]); // Default to the first table
-      }
-    } else {
-      alert("No schema found in local storage.");
-    }
-  };
-
-  const fetchSchemaFromAPI = async (baseId) => {
-    if (!apiKey) {
-      alert("No API key found. Please add an API key in your profile.");
-      return;
-    }
-    try {
-      const response = await fetch(
-        `https://api.airtable.com/v0/meta/bases/${baseId}/tables`,
-        {
-          headers: { Authorization: `Bearer ${apiKey}` },
-        }
-      );
-      const data = await response.json();
-      if (data && data.tables) {
-        localStorage.setItem("schema", JSON.stringify(data)); // Save to localStorage
-        dispatch(setSchema(data)); // Save schema in Redux
-        setSelectedTable(data.tables[0]); // Default to the first table
-      } else {
-        alert("Failed to fetch schema. Please check your API key and Base ID.");
-      }
-    } catch (error) {
-      console.error("Error fetching schema:", error);
-      alert("An error occurred while fetching the schema.");
-    }
-  };
-
-  const handleImportSchema = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        try {
-          const importedSchema = JSON.parse(e.target.result);
-          localStorage.setItem("schema", JSON.stringify(importedSchema)); // Save to localStorage
-          dispatch(setSchema(importedSchema)); // Save to Redux
-          if (importedSchema.tables && importedSchema.tables.length > 0) {
-            setSelectedTable(importedSchema.tables[0]); // Default to the first table
+  // Fetch or Load Schema on Component Mount
+  useEffect(() => {
+    const loadSchema = async () => {
+      try {
+        // Try fetching schema from Firestore
+        const baseData = await getBase(baseId);
+        if (baseData && baseData.schema) {
+          dispatch(setSchema(baseData.schema)); // Save schema in Redux
+          setSelectedTable(baseData.schema.tables[0]); // Set the first table as default
+        } else {
+          // Fallback to Airtable API if no schema in Firestore
+          const fetchedSchema = await fetchSchemaFromAPI(baseId, apiKey);
+          if (fetchedSchema) {
+            dispatch(setSchema(fetchedSchema)); // Save schema in Redux
+            setSelectedTable(fetchedSchema.tables[0]); // Set the first table as default
+          } else {
+            alert("No schema found for this Base.");
           }
-        } catch (error) {
-          console.error("Error parsing schema file:", error);
-          alert("Invalid schema file.");
         }
-      };
-      reader.readAsText(file);
-    }
-  };
+      } catch (error) {
+        console.error("Error loading schema:", error);
+        alert("Failed to load schema. Please try again.");
+      }
+    };
 
-  if (!schema || !schema.tables) {
-    return (
-      <div className="p-6">
-        <h2 className="text-xl font-bold mb-4">No Schema Loaded</h2>
-        <p>You can load a schema in one of three ways:</p>
-        <div className="mt-4 space-y-4">
-          <button
-            onClick={loadSchemaFromLocalStorage}
-            className="bg-blue-500 text-white p-2 rounded"
-          >
-            Load from Local Storage
-          </button>
-          <button
-            onClick={() => fetchSchemaFromAPI(baseId)} // Pass `baseId` as an argument
-            className="bg-green-500 text-white p-2 rounded"
-          >
-            Fetch from Airtable API
-          </button>
-          <div>
-            <p>Or import a schema file:</p>
-            <input
-              type="file"
-              accept=".json"
-              onChange={handleImportSchema}
-              className="mt-2 p-2 border rounded"
-            />
-          </div>
-        </div>
-      </div>
-    );
-  }
+    loadSchema();
+  }, [baseId, apiKey, dispatch]);
 
+  // Render Content for Active Tab
   const renderTabContent = () => {
     if (!selectedTable) {
       return <p>Please select a table to view details.</p>;
@@ -155,19 +94,20 @@ function BaseDetails() {
           </button>
         </div>
         <ul className="list-none p-0">
-          {schema.tables.map((table) => (
-            <li
-              key={table.id}
-              className={`p-3 cursor-pointer ${
-                selectedTable && selectedTable.id === table.id
-                  ? "bg-gray-300"
-                  : ""
-              } hover:bg-gray-200`}
-              onClick={() => setSelectedTable(table)}
-            >
-              {isSidebarCollapsed ? table.name.charAt(0) : table.name}
-            </li>
-          ))}
+          {schema &&
+            schema.tables.map((table) => (
+              <li
+                key={table.id}
+                className={`p-3 cursor-pointer ${
+                  selectedTable && selectedTable.id === table.id
+                    ? "bg-gray-300"
+                    : ""
+                } hover:bg-gray-200`}
+                onClick={() => setSelectedTable(table)}
+              >
+                {isSidebarCollapsed ? table.name.charAt(0) : table.name}
+              </li>
+            ))}
         </ul>
       </div>
 
